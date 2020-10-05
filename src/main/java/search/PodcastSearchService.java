@@ -32,8 +32,6 @@ class PodcastSearchService {
 
 	private final Analyzer analyzer;
 
-	private final IndexWriter writer;
-
 	private final IndexSearcher searcher;
 
 	private final Object monitor = new Object();
@@ -41,6 +39,10 @@ class PodcastSearchService {
 	private final Collection<Podcast> podcasts = Collections.synchronizedSet(new HashSet<>());
 
 	private final File indexDirectory;
+
+	Collection<Podcast> getAllPodcasts() {
+		return this.podcasts;
+	}
 
 	PodcastSearchService(Analyzer analyzer, RestTemplate template, URI podcastsJsonUri, File indexDirectory)
 			throws Exception {
@@ -50,19 +52,21 @@ class PodcastSearchService {
 		this.restTemplate = template;
 		this.analyzer = analyzer;
 		this.podcastsJsonUri = podcastsJsonUri;
-		try (var writer = indexWriter(analyzer)) {
-			this.writer = writer;
-			refreshIndex();
-		}
+		refreshIndex();
 		var reader = indexReader();
 		this.searcher = indexSearcher(reader);
+
 	}
 
+	@SneakyThrows
 	public void refreshIndex() {
+		log.info("attempting to reindex ");
 		synchronized (this.monitor) {
-			this.podcasts.clear();
-			this.podcasts.addAll(this.loadPodcasts());
-			this.podcasts.forEach(p -> indexPodcast(this.writer, p));
+			try (var writer = indexWriter(analyzer)) {
+				this.podcasts.clear();
+				this.podcasts.addAll(this.loadPodcasts());
+				this.podcasts.forEach(p -> indexPodcast(writer, p));
+			}
 		}
 	}
 
