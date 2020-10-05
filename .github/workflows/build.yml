@@ -7,6 +7,8 @@ env:
   CF_USER: ${{ secrets.CF_USER  }}
   CF_PASSWORD: ${{ secrets.CF_PASSWORD  }}
   CF_API: ${{ secrets.CF_API }}
+  CF_SPACE: ${{ secrets.CF_SPACE }}
+  CF_ORG: ${{ secrets.CF_ORG }}
   SPRING_PROFILES_ACTIVE: ci
 
 on:
