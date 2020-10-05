@@ -50,6 +50,7 @@ class LuceneAutoConfiguration {
 
 	LuceneAutoConfiguration(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
 		var directoryFile = indexDirectory.getFile();
+		log.info("attempting to create " + directoryFile.getAbsolutePath() + '.');
 		Assert.isTrue(directoryFile.exists() || directoryFile.mkdirs(),
 				() -> directoryFile.getAbsolutePath() + " does not exist");
 	}
