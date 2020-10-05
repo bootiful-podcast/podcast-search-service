@@ -10,6 +10,7 @@ env:
   CF_SPACE: ${{ secrets.CF_SPACE }}
   CF_ORG: ${{ secrets.CF_ORG }}
   SPRING_PROFILES_ACTIVE: ci
+  SEARCH_INDEX_DIRECTORY_RESOURCE: ${GITHUB_WORKSPACE}/lucene
 
 on:
   push:
