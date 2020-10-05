@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 source "$(cd $(dirname $0) && pwd)/env.sh"
-
+cf a
+cf s
 BUCKET_SUFFIX="-development"
 if [[ "$BP_MODE" = "production" ]]; then
     BUCKET_SUFFIX=""
@@ -15,7 +16,7 @@ fi
 
 mvn -DskipTests=true -Dspring.profiles.active=ci clean verify deploy || echo "could not build and deploy the artifact to Artifactory."
 
-ROUTE_HOSTNAME=bootiful-podcast-search-api
+ROUTE_HOSTNAME=bootiful-podcast-api-search
 APP_NAME=search-api
 if [[ "$BP_MODE" = "development" ]]; then
     APP_NAME=${APP_NAME}-${BP_MODE}
