@@ -11,7 +11,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 class Podcast {
-
     private Integer id;
     private String uid;
     private String title;
@@ -19,5 +18,4 @@ class Podcast {
     private URI episodePhotoUri;
     private String description;
     private URI episodeUri;
-
 }

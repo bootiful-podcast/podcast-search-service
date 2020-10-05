@@ -11,23 +11,23 @@ import java.util.function.Function;
 
 @Log4j2
 @SpringBootTest
-public class SearchServiceTest {
+public class PodcastSearchServiceTest {
 
     @Autowired
-    private SearchService searchService;
+    private PodcastSearchService podcastSearchService;
 
     @Test
     public void search() throws Exception {
-        query("Eddu", res -> res.size() == 1, searchService);
-        query("Spring Cloud", r -> r.size() > 0, searchService);
+        runQuery("Eddu", res -> res.size() == 1, podcastSearchService);
+        runQuery("Spring Cloud", r -> r.size() >= 17 , podcastSearchService);
     }
 
     private String buildBasicQuery(String query) {
         return "title:\"" + query + "\"~ OR description:\"" + query + "\"~";
     }
 
-    private void query(String query, Function<List<Podcast>, Boolean> test, SearchService searchService) throws Exception {
-        var results = searchService.search(buildBasicQuery(query));
+    private void runQuery(String query, Function<List<Podcast>, Boolean> test, PodcastSearchService podcastSearchService) throws Exception {
+        var results = podcastSearchService.search(buildBasicQuery(query));
         Assertions.assertTrue(test.apply(results), () -> "there should be one match");
         log.info(query);
         log.info("=========================================================================");
