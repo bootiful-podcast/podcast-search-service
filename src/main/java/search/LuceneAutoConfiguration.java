@@ -8,21 +8,12 @@ import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
 
@@ -36,6 +27,9 @@ class LuceneAutoConfiguration {
 
 	LuceneAutoConfiguration(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
 		this.indexDirectory = indexDirectory.getFile();
+		if (this.indexDirectory.exists() && this.indexDirectory.isDirectory()) {
+			FileSystemUtils.deleteRecursively(this.indexDirectory);
+		}
 		Assert.isTrue(this.indexDirectory.exists() || this.indexDirectory.mkdirs(),
 				() -> this.indexDirectory.getAbsolutePath() + " does not exist");
 		log.info("created " + this.indexDirectory.getAbsolutePath() + '.');
