@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.document.*;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -40,12 +41,21 @@ class SearchService {
     private final URI podcastsJsonUri;
     private final IndexSearcher indexSearcher;
 
-    SearchService(IndexSearcher is, File index, RestTemplate template, URI podcastsJsonUri)
+
+    // todo move the indxing client outside the service itself
+    // todo we should be able to multithread IndexReader, IndexWriter, IndexSearchers
+    public void index(Podcast podcast) {
+
+    }
+
+    SearchService(File index, RestTemplate template, URI podcastsJsonUri)
             throws Exception {
         this.indexDirectory = index;
         this.restTemplate = template;
         this.podcastsJsonUri = podcastsJsonUri;
-        this.indexSearcher = is;
+        buildIndex();
+        var reader = DirectoryReader.open(FSDirectory.open(indexDirectory.toPath()));
+        this.indexSearcher = new IndexSearcher(reader);
         this.podcasts.addAll(this.loadPodcasts());
         log.debug("there are " + this.podcasts.size() + " Podcasts");
     }
