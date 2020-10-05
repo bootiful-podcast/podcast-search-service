@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -54,6 +56,7 @@ class LuceneAutoConfiguration {
 		};
 	}
 
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@Bean(name = IW_NAME, destroyMethod = "close")
 	IndexWriter indexWriter(Analyzer analyzer) throws Exception {
 		var dir = FSDirectory.open(indexDirectory.toPath());
@@ -65,12 +68,14 @@ class LuceneAutoConfiguration {
 	@Bean
 	@Lazy
 	@DependsOn(value = IW_NAME)
+	@Order(Ordered.HIGHEST_PRECEDENCE + 5)
 	IndexReader indexReader() throws Exception {
 		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
 	}
 
 	@Bean
 	@Lazy
+	@Order(Ordered.HIGHEST_PRECEDENCE + 5)
 	@DependsOn(IW_NAME)
 	IndexSearcher indexSearcher(@Lazy IndexReader reader) {
 		return new IndexSearcher(reader);
