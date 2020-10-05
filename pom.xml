@@ -15,8 +15,10 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
+        <artifactory-maven-plugin.version>2.4.0</artifactory-maven-plugin.version>
         <java.version>11</java.version>
         <lucene.version>8.6.2</lucene.version>
+        <jsoup.version>1.13.1</jsoup.version>
     </properties>
 
     <dependencies>
@@ -27,7 +29,7 @@
          <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.13.1</version>
+            <version>${jsoup.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
@@ -39,14 +41,11 @@
             <artifactId>lucene-queryparser</artifactId>
             <version>${lucene.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queries</artifactId>
             <version>${lucene.version}</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -64,14 +63,112 @@
             </exclusions>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.jfrog.buildinfo</groupId>
+                <artifactId>artifactory-maven-plugin</artifactId>
+                <version>${artifactory-maven-plugin.version}</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                        <configuration>
+                            <deployProperties>
+                                <build.vcsRevision>
+                                    {{TRAVIS_COMMIT}}
+                                </build.vcsRevision>
+                            </deployProperties>
+                            <publisher>
+                                <contextUrl>
+                                    https://cloudnativejava.jfrog.io/cloudnativejava
+                                </contextUrl>
+                                <username>${env.ARTIFACTORY_USERNAME}</username>
+                                <password>${env.ARTIFACTORY_PASSWORD}</password>
+                                <repoKey>libs-release-local</repoKey>
+                                <snapshotRepoKey>libs-snapshot-local
+                                </snapshotRepoKey>
+                            </publisher>
+                            <buildInfo>
+                                <agentName>Travis CI</agentName>
+                                <buildNumber>{{TRAVIS_BUILD_NUMBER}}
+                                </buildNumber>
+                                <buildUrl>
+                                    http://travis-ci.org/{{TRAVIS_REPO_SLUG}}/builds/{{TRAVIS_BUILD_ID}}
+                                </buildUrl>
+                                <principal>{{USER}}</principal>
+                                <vcsRevision>{{TRAVIS_COMMIT}}</vcsRevision>
+                            </buildInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.spring.javaformat</groupId>
+                <artifactId>spring-javaformat-maven-plugin</artifactId>
+                <version>0.0.19</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <inherited>true</inherited>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>libs-release</name>
+            <url>
+                https://cloudnativejava.jfrog.io/cloudnativejava/libs-release
+            </url>
+        </repository>
+        <repository>
+            <snapshots/>
+            <id>snapshots</id>
+            <name>libs-snapshot</name>
+            <url>
+                https://cloudnativejava.jfrog.io/cloudnativejava/libs-snapshot
+            </url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>plugins-release</name>
+            <url>
+                https://cloudnativejava.jfrog.io/cloudnativejava/plugins-release
+            </url>
+        </pluginRepository>
+        <pluginRepository>
+            <snapshots/>
+            <id>snapshots</id>
+            <name>plugins-snapshot</name>
+            <url>
+                https://cloudnativejava.jfrog.io/cloudnativejava/plugins-snapshot
+            </url>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+
 </project>
+
