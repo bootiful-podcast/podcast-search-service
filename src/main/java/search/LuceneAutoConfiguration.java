@@ -77,7 +77,7 @@ class LuceneAutoConfiguration {
 	@Bean
 	@Lazy
 	@DependsOn(IW_NAME)
-	IndexSearcher indexSearcher(IndexReader reader) {
+	IndexSearcher indexSearcher(@Lazy IndexReader reader) {
 		return new IndexSearcher(reader);
 	}
 
