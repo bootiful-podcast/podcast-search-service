@@ -36,10 +36,10 @@ SVC_SUFFIX=""
 if [[  "$BP_MODE" = "development"  ]]; then
  SVC_SUFFIX="-dev"
 fi
-DB_SVC_NAME=bootiful-podcast-db${SVC_SUFFIX}
-MQ_SVC_NAME=bootiful-podcast-mq${SVC_SUFFIX}
-cf bs ${APP_NAME} ${MQ_SVC_NAME}
-cf bs ${APP_NAME} ${DB_SVC_NAME}
+#DB_SVC_NAME=bootiful-podcast-db${SVC_SUFFIX}
+#MQ_SVC_NAME=bootiful-podcast-mq${SVC_SUFFIX}
+#cf bs ${APP_NAME} ${MQ_SVC_NAME}
+#cf bs ${APP_NAME} ${DB_SVC_NAME}
 
 cf restart $APP_NAME
 
