@@ -23,6 +23,7 @@ if [[ "$BP_MODE" = "development" ]]; then
     ROUTE_HOSTNAME=${ROUTE_HOSTNAME}-development
 fi
 
+cf d -f ${APP_NAME}
 cf push -b java_buildpack --no-start  -p target/search-api-0.0.1-SNAPSHOT.jar ${APP_NAME} #-k 2GB -m 2GB
 cf set-env $APP_NAME JBP_CONFIG_OPEN_JDK_JRE '{ jre: { version: 11.+}}'
 cf set-env $APP_NAME BP_MODE $BP_MODE
