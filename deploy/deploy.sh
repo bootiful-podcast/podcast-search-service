@@ -13,8 +13,6 @@ if [ "$GITHUB_EVENT_NAME" = "create" ]; then
   fi
 fi
 
-echo "BP_MODE=${BP_MODE}"
-
 mvn -Dspring.profiles.active=ci verify deploy || die "could not build and deploy the artifact to Artifactory."
 
 ROUTE_HOSTNAME=bootiful-podcast-search-api
