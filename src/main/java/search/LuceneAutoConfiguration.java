@@ -68,14 +68,14 @@ class LuceneAutoConfiguration {
 	@Bean
 	@Lazy
 	@DependsOn(value = IW_NAME)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 5)
+	@Order(Ordered.LOWEST_PRECEDENCE)
 	IndexReader indexReader() throws Exception {
 		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
 	}
 
 	@Bean
 	@Lazy
-	@Order(Ordered.HIGHEST_PRECEDENCE + 5)
+	@Order(Ordered.LOWEST_PRECEDENCE)
 	@DependsOn(IW_NAME)
 	IndexSearcher indexSearcher(@Lazy IndexReader reader) {
 		return new IndexSearcher(reader);
