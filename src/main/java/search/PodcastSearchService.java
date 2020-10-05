@@ -45,6 +45,8 @@ class PodcastSearchService {
 	PodcastSearchService(Analyzer analyzer, RestTemplate template, URI podcastsJsonUri, File indexDirectory)
 			throws Exception {
 		this.indexDirectory = indexDirectory;
+		Assert.isTrue(this.indexDirectory.exists() || this.indexDirectory.mkdirs(),
+				() -> "the directory " + this.indexDirectory.getAbsolutePath() + " should exist");
 		this.restTemplate = template;
 		this.analyzer = analyzer;
 		this.podcastsJsonUri = podcastsJsonUri;
