@@ -38,13 +38,6 @@ class LuceneAutoConfiguration {
 	}
 
 	@Bean
-	@Lazy
-	@DependsOn(IW_NAME)
-	IndexSearcher indexSearcher(IndexReader reader) {
-		return new IndexSearcher(reader);
-	}
-
-	@Bean
 	Analyzer analyzer() {
 		return new Analyzer() {
 
@@ -66,6 +59,14 @@ class LuceneAutoConfiguration {
 		log.info("created " + directoryFile.getAbsolutePath() + '.');
 	}
 
+	@Bean(name = IW_NAME, destroyMethod = "close")
+	IndexWriter indexWriter(Analyzer analyzer) throws Exception {
+		var dir = FSDirectory.open(indexDirectory.toPath());
+		var iwc = new IndexWriterConfig(analyzer);
+		iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		return new IndexWriter(dir, iwc);
+	}
+
 	@Bean
 	@Lazy
 	@DependsOn(value = IW_NAME)
@@ -73,12 +74,11 @@ class LuceneAutoConfiguration {
 		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
 	}
 
-	@Bean(name = IW_NAME, destroyMethod = "close")
-	IndexWriter indexWriter(Analyzer analyzer) throws Exception {
-		var dir = FSDirectory.open(indexDirectory.toPath());
-		var iwc = new IndexWriterConfig(analyzer);
-		iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-		return new IndexWriter(dir, iwc);
+	@Bean
+	@Lazy
+	@DependsOn(IW_NAME)
+	IndexSearcher indexSearcher(IndexReader reader) {
+		return new IndexSearcher(reader);
 	}
 
 }
