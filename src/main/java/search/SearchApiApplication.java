@@ -19,33 +19,28 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class SearchApiApplication {
 
-    @Bean
-    RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-        return restTemplateBuilder.build();
-    }
+	@Bean
+	RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+		return restTemplateBuilder.build();
+	}
 
-    @Bean
-    PodcastSearchService podcastSearchService(
-            RestTemplate restTemplate,
-            Analyzer analyzer,
-            IndexWriter writer,
-            IndexSearcher searcher,
-            @Value("${search.podcasts-json-resource}") Resource uri,
-            @Value("${search.index-directory-resource}") Resource indexDir) throws Exception {
-        var file = indexDir.getFile();
-        Assert.isTrue(file.exists() || file.mkdirs(), () -> "the directory " + file.getAbsolutePath() + " should exist");
-        return new PodcastSearchService(analyzer, writer, searcher, restTemplate, uri.getURI());
-    }
+	@Bean
+	PodcastSearchService podcastSearchService(RestTemplate restTemplate, Analyzer analyzer, IndexWriter writer,
+			IndexSearcher searcher, @Value("${search.podcasts-json-resource}") Resource uri,
+			@Value("${search.index-directory-resource}") Resource indexDir) throws Exception {
+		var file = indexDir.getFile();
+		Assert.isTrue(file.exists() || file.mkdirs(),
+				() -> "the directory " + file.getAbsolutePath() + " should exist");
+		return new PodcastSearchService(analyzer, writer, searcher, restTemplate, uri.getURI());
+	}
 
-    @Bean
-    ApplicationListener<ApplicationReadyEvent> readyEventApplicationListener(PodcastSearchService pss) {
-        return e -> pss.refreshIndex();
-    }
+	@Bean
+	ApplicationListener<ApplicationReadyEvent> readyEventApplicationListener(PodcastSearchService pss) {
+		return e -> pss.refreshIndex();
+	}
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(SearchApiApplication.class, args);
-    }
-
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SearchApiApplication.class, args);
+	}
 
 }
-

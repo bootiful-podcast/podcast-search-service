@@ -23,40 +23,42 @@ import org.springframework.core.io.Resource;
 @Configuration
 class LuceneAutoConfiguration {
 
-    LuceneAutoConfiguration() {
-        log.debug("launching " + this.getClass().getName() + '.');
-    }
+	LuceneAutoConfiguration() {
+		log.debug("launching " + this.getClass().getName() + '.');
+	}
 
-    @Bean
-    IndexSearcher indexSearcher(IndexReader reader) {
-        return new IndexSearcher(reader);
-    }
+	@Bean
+	IndexSearcher indexSearcher(IndexReader reader) {
+		return new IndexSearcher(reader);
+	}
 
-    @Bean
-    Analyzer analyzer() {
-        return new Analyzer() {
-            @Override
-            protected TokenStreamComponents createComponents(String fieldName) {
-                var tokenizer = new StandardTokenizer();
-                tokenizer.setMaxTokenLength(StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH);
-                var filters = new StopFilter(new ASCIIFoldingFilter(new LowerCaseFilter(tokenizer)), CharArraySet.EMPTY_SET);
-                return new TokenStreamComponents(tokenizer, filters);
-            }
-        };
+	@Bean
+	Analyzer analyzer() {
+		return new Analyzer() {
+			@Override
+			protected TokenStreamComponents createComponents(String fieldName) {
+				var tokenizer = new StandardTokenizer();
+				tokenizer.setMaxTokenLength(StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH);
+				var filters = new StopFilter(new ASCIIFoldingFilter(new LowerCaseFilter(tokenizer)),
+						CharArraySet.EMPTY_SET);
+				return new TokenStreamComponents(tokenizer, filters);
+			}
+		};
 
-    }
+	}
 
-    @Bean
-    IndexReader indexReader(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
-        return DirectoryReader.open(FSDirectory.open(indexDirectory.getFile().toPath()));
-    }
+	@Bean
+	IndexReader indexReader(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
+		return DirectoryReader.open(FSDirectory.open(indexDirectory.getFile().toPath()));
+	}
 
-    @Bean(destroyMethod = "close")
-    IndexWriter indexWriter(Analyzer analyzer, @Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
-        var dir = FSDirectory.open(indexDirectory.getFile().toPath());
-        var iwc = new IndexWriterConfig(analyzer);
-        iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-        return new IndexWriter(dir, iwc);
-    }
+	@Bean(destroyMethod = "close")
+	IndexWriter indexWriter(Analyzer analyzer, @Value("${search.index-directory-resource}") Resource indexDirectory)
+			throws Exception {
+		var dir = FSDirectory.open(indexDirectory.getFile().toPath());
+		var iwc = new IndexWriterConfig(analyzer);
+		iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		return new IndexWriter(dir, iwc);
+	}
 
 }
