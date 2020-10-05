@@ -8,11 +8,11 @@ env:
   SPRING_PROFILES_ACTIVE: ci
 
 on:
-  create:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
