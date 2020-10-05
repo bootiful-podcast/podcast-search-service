@@ -4,11 +4,11 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.store.FSDirectory;
 import org.jsoup.Jsoup;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
@@ -16,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,13 +40,17 @@ class PodcastSearchService {
 
 	private final Collection<Podcast> podcasts = Collections.synchronizedSet(new HashSet<>());
 
-	PodcastSearchService(Analyzer analyzer, IndexWriter writer, @Lazy IndexSearcher searcher, RestTemplate template,
-			URI podcastsJsonUri) {
+	private final File indexDirectory;
+
+	PodcastSearchService(Analyzer analyzer, RestTemplate template, URI podcastsJsonUri, File indexDirectory)
+			throws Exception {
 		this.restTemplate = template;
 		this.analyzer = analyzer;
 		this.podcastsJsonUri = podcastsJsonUri;
-		this.writer = writer;
-		this.searcher = searcher;
+		this.writer = indexWriter(analyzer);
+		var reader = indexReader();
+		this.searcher = indexSearcher(reader);
+		this.indexDirectory = indexDirectory;
 	}
 
 	public void refreshIndex() {
@@ -100,6 +105,21 @@ class PodcastSearchService {
 		log.debug("there are " + searchUids.size() + " results for the query [" + query + "]");
 		return this.podcasts.stream().filter(podcast -> searchUids.contains(podcast.getUid()))
 				.collect(Collectors.toList());
+	}
+
+	private IndexWriter indexWriter(Analyzer analyzer) throws Exception {
+		var dir = FSDirectory.open(indexDirectory.toPath());
+		var iwc = new IndexWriterConfig(analyzer);
+		iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		return new IndexWriter(dir, iwc);
+	}
+
+	private IndexReader indexReader() throws Exception {
+		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
+	}
+
+	private IndexSearcher indexSearcher(@Lazy IndexReader reader) {
+		return new IndexSearcher(reader);
 	}
 
 }

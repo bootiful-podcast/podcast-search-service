@@ -56,29 +56,4 @@ class LuceneAutoConfiguration {
 		};
 	}
 
-	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-	@Bean(name = IW_NAME, destroyMethod = "close")
-	IndexWriter indexWriter(Analyzer analyzer) throws Exception {
-		var dir = FSDirectory.open(indexDirectory.toPath());
-		var iwc = new IndexWriterConfig(analyzer);
-		iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-		return new IndexWriter(dir, iwc);
-	}
-
-	@Bean
-	@Lazy
-	@DependsOn(value = IW_NAME)
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	IndexReader indexReader() throws Exception {
-		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
-	}
-
-	@Bean
-	@Lazy
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	@DependsOn(IW_NAME)
-	IndexSearcher indexSearcher(@Lazy IndexReader reader) {
-		return new IndexSearcher(reader);
-	}
-
 }
