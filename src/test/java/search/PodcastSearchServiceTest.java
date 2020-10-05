@@ -19,8 +19,6 @@ public class PodcastSearchServiceTest {
 
 	@Test
 	public void search() throws Exception {
-		// var ac = SpringApplication.run(SearchApiApplication.class);
-		// var podcastSearchService = ac.getBean(PodcastSearchService.class);
 		runQuery("Eddu", res -> res.size() == 1, podcastSearchService);
 		runQuery("Spring Cloud", r -> r.size() >= 17, podcastSearchService);
 	}
