@@ -23,12 +23,12 @@ if [[ "$BP_MODE" = "development" ]]; then
     ROUTE_HOSTNAME=${ROUTE_HOSTNAME}-development
 fi
 
-cf push -k 2GB -m 2GB -b java_buildpack --no-start --no-route -p target/search-api-0.0.1-SNAPSHOT.jar ${APP_NAME}
+cf push -b java_buildpack --no-start  -p target/search-api-0.0.1-SNAPSHOT.jar ${APP_NAME} #-k 2GB -m 2GB
 cf set-env $APP_NAME JBP_CONFIG_OPEN_JDK_JRE '{ jre: { version: 11.+}}'
 cf set-env $APP_NAME BP_MODE $BP_MODE
 cf set-env $APP_NAME SPRING_PROFILES_ACTIVE cloud
-cf routes | grep ${ROUTE_HOSTNAME} || cf create-route bootiful-podcast cfapps.io --hostname ${ROUTE_HOSTNAME}
-cf map-route $APP_NAME cfapps.io --hostname $ROUTE_HOSTNAME
+#cf routes | grep ${ROUTE_HOSTNAME} || cf create-route bootiful-podcast cfapps.io --hostname ${ROUTE_HOSTNAME}
+#cf map-route $APP_NAME cfapps.io --hostname $ROUTE_HOSTNAME
 
 
 
