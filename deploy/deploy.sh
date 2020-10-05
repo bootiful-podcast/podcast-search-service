@@ -18,7 +18,7 @@ echo "BP_MODE=${BP_MODE}"
 mvn -Dspring.profiles.active=ci verify deploy || die "could not build and deploy the artifact to Artifactory."
 
 ROUTE_HOSTNAME=bootiful-podcast-search-api
-APP_NAME=api
+APP_NAME=search-api
 if [[ "$BP_MODE" = "development" ]]; then
     APP_NAME=${APP_NAME}-${BP_MODE}
     ROUTE_HOSTNAME=${ROUTE_HOSTNAME}-development
