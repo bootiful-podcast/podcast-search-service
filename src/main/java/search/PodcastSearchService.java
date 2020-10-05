@@ -50,8 +50,8 @@ class PodcastSearchService {
 		this.restTemplate = template;
 		this.analyzer = analyzer;
 		this.podcastsJsonUri = podcastsJsonUri;
-		try (var writer = indexWriter(analyzer) ){
-			this.writer = writer ;
+		try (var writer = indexWriter(analyzer)) {
+			this.writer = writer;
 			refreshIndex();
 		}
 		var reader = indexReader();
