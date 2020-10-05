@@ -34,7 +34,9 @@ class LuceneAutoConfiguration {
 
 	LuceneAutoConfiguration(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
 		this.indexDirectory = indexDirectory.getFile();
-		this.ensure(this.indexDirectory);
+		Assert.isTrue(this.indexDirectory.exists() || this.indexDirectory.mkdirs(),
+				() -> this.indexDirectory.getAbsolutePath() + " does not exist");
+		log.info("created " + this.indexDirectory.getAbsolutePath() + '.');
 	}
 
 	@Bean
@@ -50,13 +52,6 @@ class LuceneAutoConfiguration {
 				return new TokenStreamComponents(tokenizer, filters);
 			}
 		};
-	}
-
-	private void ensure(File directoryFile) {
-		// if (directoryFile.exists()) directoryFile.delete();
-		Assert.isTrue(directoryFile.exists() || directoryFile.mkdirs(),
-				() -> directoryFile.getAbsolutePath() + " does not exist");
-		log.info("created " + directoryFile.getAbsolutePath() + '.');
 	}
 
 	@Bean(name = IW_NAME, destroyMethod = "close")

@@ -10,6 +10,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.jsoup.Jsoup;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
@@ -38,7 +39,7 @@ class PodcastSearchService {
 
 	private final Collection<Podcast> podcasts = Collections.synchronizedSet(new HashSet<>());
 
-	PodcastSearchService(Analyzer analyzer, IndexWriter writer, IndexSearcher searcher, RestTemplate template,
+	PodcastSearchService(Analyzer analyzer, IndexWriter writer, @Lazy IndexSearcher searcher, RestTemplate template,
 			URI podcastsJsonUri) {
 		this.restTemplate = template;
 		this.analyzer = analyzer;
