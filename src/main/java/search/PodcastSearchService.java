@@ -44,6 +44,7 @@ class PodcastSearchService {
 
 	PodcastSearchService(Analyzer analyzer, RestTemplate template, URI podcastsJsonUri, File indexDirectory)
 			throws Exception {
+		this.indexDirectory = indexDirectory;
 		this.restTemplate = template;
 		this.analyzer = analyzer;
 		this.podcastsJsonUri = podcastsJsonUri;
@@ -51,7 +52,6 @@ class PodcastSearchService {
 		refreshIndex();
 		var reader = indexReader();
 		this.searcher = indexSearcher(reader);
-		this.indexDirectory = indexDirectory;
 	}
 
 	public void refreshIndex() {

@@ -25,10 +25,7 @@ public class SearchApiApplication {
 	PodcastSearchService podcastSearchService(@Value("${search.index-directory-resource}") Resource indexDirectory,
 			RestTemplate restTemplate, Analyzer analyzer, @Value("${search.podcasts-json-resource}") Resource uri)
 			throws Exception {
-		var podcastSearchService = new PodcastSearchService(analyzer, restTemplate, uri.getURI(),
-				indexDirectory.getFile());
-		podcastSearchService.refreshIndex();
-		return podcastSearchService;
+		return new PodcastSearchService(analyzer, restTemplate, uri.getURI(), indexDirectory.getFile());
 	}
 
 	public static void main(String[] args) throws Exception {
