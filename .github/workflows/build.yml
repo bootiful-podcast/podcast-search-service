@@ -1,7 +1,5 @@
-# Build the Podbean Client
 
-name: API
-
+name: Search
 
 env:
   ARTIFACTORY_API_TOKEN_SECRET: ${{ secrets.ARTIFACTORY_API_TOKEN_SECRET }}
