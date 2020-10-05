@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public class PodcastSearchServiceTest {
 
 	@Test
 	public void search() throws Exception {
+		// var ac = SpringApplication.run(SearchApiApplication.class);
+		// var podcastSearchService = ac.getBean(PodcastSearchService.class);
 		runQuery("Eddu", res -> res.size() == 1, podcastSearchService);
 		runQuery("Spring Cloud", r -> r.size() >= 17, podcastSearchService);
 	}

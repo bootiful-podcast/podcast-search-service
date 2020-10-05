@@ -17,6 +17,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -55,15 +56,13 @@ class LuceneAutoConfiguration {
 	}
 
 	private void ensure(File directoryFile) {
-		if (directoryFile.exists()) {
-			directoryFile.delete();
-		}
-		directoryFile.mkdirs();
-		Assert.isTrue(directoryFile.exists(), () -> directoryFile.getAbsolutePath() + " does not exist");
+		Assert.isTrue(directoryFile.exists() || directoryFile.mkdirs(),
+				() -> directoryFile.getAbsolutePath() + " does not exist");
 		log.info("created " + directoryFile.getAbsolutePath() + '.');
 	}
 
 	@Bean
+	@Lazy
 	IndexReader indexReader() throws Exception {
 		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
 	}
