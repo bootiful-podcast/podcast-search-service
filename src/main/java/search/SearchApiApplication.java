@@ -26,13 +26,8 @@ public class SearchApiApplication {
 
 	@Bean
 	PodcastSearchService podcastSearchService(RestTemplate restTemplate, Analyzer analyzer, IndexWriter writer,
-			IndexSearcher searcher, @Value("${search.podcasts-json-resource}") Resource uri,
-			@Value("${search.index-directory-resource}") Resource indexDir) throws Exception {
-		var file = indexDir.getFile();
-		Assert.isTrue(file.exists() || file.mkdirs(),
-				() -> "the directory " + file.getAbsolutePath() + " should exist");
-		PodcastSearchService podcastSearchService = new PodcastSearchService(analyzer, writer, searcher, restTemplate,
-				uri.getURI());
+			IndexSearcher searcher, @Value("${search.podcasts-json-resource}") Resource uri) throws Exception {
+		var podcastSearchService = new PodcastSearchService(analyzer, writer, searcher, restTemplate, uri.getURI());
 		podcastSearchService.refreshIndex();
 		return podcastSearchService;
 	}
