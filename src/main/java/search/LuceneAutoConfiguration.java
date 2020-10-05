@@ -28,6 +28,11 @@ class LuceneAutoConfiguration {
 
 	private final File indexDirectory;
 
+	LuceneAutoConfiguration(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
+		this.indexDirectory = indexDirectory.getFile();
+		this.ensure(this.indexDirectory);
+	}
+
 	@Bean
 	IndexSearcher indexSearcher(IndexReader reader) {
 		return new IndexSearcher(reader);
@@ -49,15 +54,11 @@ class LuceneAutoConfiguration {
 
 	}
 
-	LuceneAutoConfiguration(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
-		this.indexDirectory = indexDirectory.getFile();
-		this.ensure(this.indexDirectory);
-	}
-
 	private void ensure(File directoryFile) {
 		log.info("attempting to create " + directoryFile.getAbsolutePath() + '.');
 		Assert.isTrue(directoryFile.exists() || directoryFile.mkdirs(),
 				() -> directoryFile.getAbsolutePath() + " does not exist");
+		log.info("created " + directoryFile.getAbsolutePath() + '.');
 	}
 
 	@Bean
