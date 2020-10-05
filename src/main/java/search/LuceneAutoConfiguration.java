@@ -28,6 +28,8 @@ import java.io.File;
 @Configuration
 class LuceneAutoConfiguration {
 
+	private static final String IW_NAME = "indexWriter";
+
 	private final File indexDirectory;
 
 	LuceneAutoConfiguration(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
@@ -53,12 +55,12 @@ class LuceneAutoConfiguration {
 				return new TokenStreamComponents(tokenizer, filters);
 			}
 		};
-
 	}
 
 	private void ensure(File directoryFile) {
-		if (directoryFile.exists())
-			directoryFile.delete();
+		/*
+		 * if (directoryFile.exists()) directoryFile.delete();
+		 */
 		Assert.isTrue(directoryFile.exists() || directoryFile.mkdirs(),
 				() -> directoryFile.getAbsolutePath() + " does not exist");
 		log.info("created " + directoryFile.getAbsolutePath() + '.');
@@ -66,12 +68,12 @@ class LuceneAutoConfiguration {
 
 	@Bean
 	@Lazy
-	@DependsOn(value = "indexWriter")
+	@DependsOn(value = IW_NAME)
 	IndexReader indexReader() throws Exception {
 		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
 	}
 
-	@Bean(destroyMethod = "close")
+	@Bean(name = IW_NAME, destroyMethod = "close")
 	IndexWriter indexWriter(Analyzer analyzer) throws Exception {
 		var dir = FSDirectory.open(indexDirectory.toPath());
 		var iwc = new IndexWriterConfig(analyzer);
