@@ -56,6 +56,8 @@ class LuceneAutoConfiguration {
 	}
 
 	private void ensure(File directoryFile) {
+		if (directoryFile.exists())
+			directoryFile.delete();
 		Assert.isTrue(directoryFile.exists() || directoryFile.mkdirs(),
 				() -> directoryFile.getAbsolutePath() + " does not exist");
 		log.info("created " + directoryFile.getAbsolutePath() + '.');
