@@ -48,6 +48,7 @@ class PodcastSearchService {
 		this.analyzer = analyzer;
 		this.podcastsJsonUri = podcastsJsonUri;
 		this.writer = indexWriter(analyzer);
+		refreshIndex();
 		var reader = indexReader();
 		this.searcher = indexSearcher(reader);
 		this.indexDirectory = indexDirectory;
