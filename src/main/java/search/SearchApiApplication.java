@@ -31,13 +31,12 @@ public class SearchApiApplication {
 		var file = indexDir.getFile();
 		Assert.isTrue(file.exists() || file.mkdirs(),
 				() -> "the directory " + file.getAbsolutePath() + " should exist");
-		return new PodcastSearchService(analyzer, writer, searcher, restTemplate, uri.getURI());
+		PodcastSearchService podcastSearchService = new PodcastSearchService(analyzer, writer, searcher, restTemplate, uri.getURI());
+		podcastSearchService.refreshIndex();
+		return podcastSearchService;
 	}
 
-	@Bean
-	ApplicationListener<ApplicationReadyEvent> readyEventApplicationListener(PodcastSearchService pss) {
-		return e -> pss.refreshIndex();
-	}
+
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SearchApiApplication.class, args);
