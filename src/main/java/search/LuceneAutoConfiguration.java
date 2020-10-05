@@ -27,14 +27,6 @@ class LuceneAutoConfiguration {
 
 	LuceneAutoConfiguration(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
 		this.indexDirectory = indexDirectory.getFile();
-		/*
-		 * if (this.indexDirectory.exists() && this.indexDirectory.isDirectory()) {
-		 * FileSystemUtils.deleteRecursively(this.indexDirectory); }
-		 * Assert.isTrue(this.indexDirectory.exists() || this.indexDirectory.mkdirs(), ()
-		 * -> this.indexDirectory.getAbsolutePath() + " does not exist");
-		 * log.info("created " + this.indexDirectory.getAbsolutePath() + '.');
-		 *
-		 */
 	}
 
 	@Bean

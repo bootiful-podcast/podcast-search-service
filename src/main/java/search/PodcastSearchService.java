@@ -21,6 +21,11 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * todo right now i have to index in the constructor which isn't great. the reader/search
+ * combo don't work if there's no index already built. \ so what we'd want, ideally, is to
+ * moot those objects until the index is built. Maybe lazy proxies?
+ */
 @Log4j2
 class PodcastSearchService {
 
@@ -40,10 +45,6 @@ class PodcastSearchService {
 
 	private final File indexDirectory;
 
-	Collection<Podcast> getAllPodcasts() {
-		return this.podcasts;
-	}
-
 	PodcastSearchService(Analyzer analyzer, RestTemplate template, URI podcastsJsonUri, File indexDirectory)
 			throws Exception {
 		this.indexDirectory = indexDirectory;
@@ -55,7 +56,10 @@ class PodcastSearchService {
 		refreshIndex();
 		var reader = indexReader();
 		this.searcher = indexSearcher(reader);
+	}
 
+	Collection<Podcast> getAllPodcasts() {
+		return this.podcasts;
 	}
 
 	@SneakyThrows
