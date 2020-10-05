@@ -17,6 +17,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -65,6 +66,7 @@ class LuceneAutoConfiguration {
 
 	@Bean
 	@Lazy
+	@DependsOn(value = "indexWriter")
 	IndexReader indexReader() throws Exception {
 		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
 	}
