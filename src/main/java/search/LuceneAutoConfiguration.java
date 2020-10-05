@@ -20,13 +20,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
+import java.io.File;
+
 @Log4j2
 @Configuration
 class LuceneAutoConfiguration {
 
-	LuceneAutoConfiguration() {
-		log.debug("launching " + this.getClass().getName() + '.');
-	}
+	private final File indexDirectory;
 
 	@Bean
 	IndexSearcher indexSearcher(IndexReader reader) {
@@ -36,6 +36,7 @@ class LuceneAutoConfiguration {
 	@Bean
 	Analyzer analyzer() {
 		return new Analyzer() {
+
 			@Override
 			protected TokenStreamComponents createComponents(String fieldName) {
 				var tokenizer = new StandardTokenizer();
@@ -49,21 +50,24 @@ class LuceneAutoConfiguration {
 	}
 
 	LuceneAutoConfiguration(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
-		var directoryFile = indexDirectory.getFile();
+		this.indexDirectory = indexDirectory.getFile();
+		this.ensure(this.indexDirectory);
+	}
+
+	private void ensure(File directoryFile) {
 		log.info("attempting to create " + directoryFile.getAbsolutePath() + '.');
 		Assert.isTrue(directoryFile.exists() || directoryFile.mkdirs(),
 				() -> directoryFile.getAbsolutePath() + " does not exist");
 	}
 
 	@Bean
-	IndexReader indexReader(@Value("${search.index-directory-resource}") Resource indexDirectory) throws Exception {
-		return DirectoryReader.open(FSDirectory.open(indexDirectory.getFile().toPath()));
+	IndexReader indexReader() throws Exception {
+		return DirectoryReader.open(FSDirectory.open(this.indexDirectory.toPath()));
 	}
 
 	@Bean(destroyMethod = "close")
-	IndexWriter indexWriter(Analyzer analyzer, @Value("${search.index-directory-resource}") Resource indexDirectory)
-			throws Exception {
-		var dir = FSDirectory.open(indexDirectory.getFile().toPath());
+	IndexWriter indexWriter(Analyzer analyzer) throws Exception {
+		var dir = FSDirectory.open(indexDirectory.toPath());
 		var iwc = new IndexWriterConfig(analyzer);
 		iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 		return new IndexWriter(dir, iwc);
